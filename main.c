@@ -10,15 +10,19 @@ typedef struct Complex {
 typedef unsigned char RGB_Pixel[3];
 static const unsigned char MAX_RGB_VAL = 255;
 
-static const int Image_Width = 5000;
-static const int Image_Height = 5000;
-static const int Max_Iterations = 1000;
+static const int Image_Width = 5000;//original 5000
+static const int Image_Height = 5000;//original 5000
+static const int Max_Iterations = 1000;//original 1000
+static const int number_of_threads = 10;
 
 static const Complex Focus_Point = {.real = -0.5, .imaginary = 0};
 static const long double Zoom = 2;
 
 // We use the coloring schema outlined from https://solarianprogrammer.com/2013/02/28/mandelbrot-set-cpp-11/
 void calc_colors(RGB_Pixel *colors) {
+    //Bonaventure Biko: 04-04-2019
+#pragma omp parallel for num_threads(number_of_threads) schedule(static,1)
+
     for (int i = 0; i < Max_Iterations; i++) {
         double t = (double) i / Max_Iterations;
 
@@ -57,6 +61,8 @@ int main(int argc, const char **argv) {
     };
 
     // Loop through the image pixels
+    //Bonaventure Biko: 04-04-2019
+#pragma omp parallel for num_threads(number_of_threads) schedule(static,1)
     for (int img_y = 0; img_y < Image_Height; img_y++) {
         for (int img_x = 0; img_x < Image_Width; img_x++) {
             // Find the value of C in the Mandelbrot range corresponding to this pixel
